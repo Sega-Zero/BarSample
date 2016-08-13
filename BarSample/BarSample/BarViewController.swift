@@ -15,6 +15,7 @@ class BarViewController: UIViewController {
     @IBOutlet var barHeightConstraint: NSLayoutConstraint!
     @IBOutlet var callBarView: UIView!
     @IBOutlet var topContainerConstraint: NSLayoutConstraint!
+    @IBOutlet var tapToReturnToCallLabel: UILabel!
 
     private var isBarVisible = false {
         didSet {
@@ -56,6 +57,31 @@ class BarViewController: UIViewController {
 
     deinit {
         NSNotificationCenter.defaultCenter().removeObserver(self)
+    }
+
+    // MARK: blink animation
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        self.blinkOn()
+    }
+
+    private func blinkOn() {
+        let animationOptions: UIViewAnimationOptions = [.CurveEaseInOut, .AllowUserInteraction]
+        UIView.animateWithDuration(1, delay: 0.0, options: animationOptions, animations: {
+            self.tapToReturnToCallLabel.alpha = 1
+        }, completion: { _ in
+            self.blinkOff()
+        })
+
+    }
+
+    private func blinkOff() {
+        let animationOptions: UIViewAnimationOptions = [.CurveEaseInOut, .AllowUserInteraction]
+        UIView.animateWithDuration(0.8, delay: 0.4, options: animationOptions, animations: {
+            self.tapToReturnToCallLabel.alpha = 0.01
+        }, completion: { _ in
+            self.blinkOn()
+        })
     }
 
     // MARK: Segue
