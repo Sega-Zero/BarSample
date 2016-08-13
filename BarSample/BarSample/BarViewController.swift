@@ -13,14 +13,22 @@ typealias BarShowClosure = (Bool) -> ()
 class BarViewController: UIViewController {
 
     @IBOutlet var barHeightConstraint: NSLayoutConstraint!
+    @IBOutlet var callBarView: UIView!
+    @IBOutlet var topContainerConstraint: NSLayoutConstraint!
 
     private var isBarVisible = false {
         didSet {
             guard isBarVisible != oldValue else { return }
 
+            self.callBarView.hidden = !self.isBarVisible
+
             barHeightConstraint.constant = isBarVisible ? 40 : 0
-            UIView.animateWithDuration(0.3) { _ in
-                self.view.layoutIfNeeded()
+            topContainerConstraint.constant = isBarVisible ? 20 : 0
+            
+            UIView.transitionWithView(self.callBarView, duration: 0.3, options: [UIViewAnimationOptions.TransitionFlipFromTop, UIViewAnimationOptions.LayoutSubviews, UIViewAnimationOptions.CurveEaseOut], animations: { self.view.layoutIfNeeded() }) { _ in
+                if !self.isBarVisible {
+                    self.callBarView.hidden = true
+                }
             }
         }
     }

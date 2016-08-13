@@ -25,7 +25,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Loaded by FirstViewController" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="A5M-7J-77L">
-                                <rect key="frame" x="203" y="329" width="194" height="17"/>
+                                <rect key="frame" x="203" y="328" width="194" height="17"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
@@ -74,7 +74,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Loaded by SecondViewController" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NDk-cv-Gan">
-                                <rect key="frame" x="192" y="329" width="215" height="17"/>
+                                <rect key="frame" x="192" y="328" width="215" height="17"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
@@ -135,19 +135,29 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="XoH-DU-WxR">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="0.0"/>
-                                <color key="backgroundColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" id="ird-h6-ivy"/>
-                                </constraints>
-                            </view>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vVt-T4-zoV">
                                 <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                                 <connections>
                                     <segue destination="49e-Tb-3d3" kind="embed" identifier="EmbedTabbar" id="cWR-b7-ACg"/>
                                 </connections>
                             </containerView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="XoH-DU-WxR">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="0.0"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tap to return to call" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="d03-Hs-FL2">
+                                        <rect key="frame" x="241" y="-19" width="118" height="16"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="bottom" secondItem="d03-Hs-FL2" secondAttribute="bottom" constant="3" id="5oD-te-VwK"/>
+                                    <constraint firstAttribute="height" id="ird-h6-ivy"/>
+                                    <constraint firstItem="d03-Hs-FL2" firstAttribute="centerX" secondItem="XoH-DU-WxR" secondAttribute="centerX" id="szZ-XD-AeQ"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
@@ -156,12 +166,14 @@
                             <constraint firstItem="vVt-T4-zoV" firstAttribute="leading" secondItem="7hX-ff-Ev1" secondAttribute="leading" id="9l4-NH-GHl"/>
                             <constraint firstItem="XoH-DU-WxR" firstAttribute="top" secondItem="7hX-ff-Ev1" secondAttribute="top" id="B8P-zY-nIn"/>
                             <constraint firstItem="ujB-WP-T2c" firstAttribute="top" secondItem="vVt-T4-zoV" secondAttribute="bottom" id="KaP-HV-dMv"/>
-                            <constraint firstItem="vVt-T4-zoV" firstAttribute="top" secondItem="XoH-DU-WxR" secondAttribute="bottom" id="Yti-is-f2e"/>
                             <constraint firstAttribute="trailing" secondItem="vVt-T4-zoV" secondAttribute="trailing" id="Z2I-ZG-CJf"/>
+                            <constraint firstItem="vVt-T4-zoV" firstAttribute="top" secondItem="7hX-ff-Ev1" secondAttribute="top" id="wDs-aX-Jkw"/>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="barHeightConstraint" destination="ird-h6-ivy" id="8hG-qC-OJq"/>
+                        <outlet property="barHeightConstraint" destination="ird-h6-ivy" id="LEC-3g-jIa"/>
+                        <outlet property="callBarView" destination="XoH-DU-WxR" id="UKa-ly-IOO"/>
+                        <outlet property="topContainerConstraint" destination="wDs-aX-Jkw" id="fm6-hH-JkM"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mlj-dM-0gt" userLabel="First Responder" sceneMemberID="firstResponder"/>
