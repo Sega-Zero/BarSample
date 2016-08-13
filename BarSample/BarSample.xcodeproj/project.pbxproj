@@ -14,6 +14,7 @@
 		CEF442761D5EF0E60061CC49 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CEF442751D5EF0E60061CC49 /* Assets.xcassets */; };
 		CEF442791D5EF0E60061CC49 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CEF442771D5EF0E60061CC49 /* LaunchScreen.storyboard */; };
 		CEF442811D5EF2200061CC49 /* BarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF442801D5EF2200061CC49 /* BarViewController.swift */; };
+		CEF442851D5FC2BC0061CC49 /* UINavigationBar+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF442841D5FC2BC0061CC49 /* UINavigationBar+Extensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,7 @@
 		CEF442781D5EF0E60061CC49 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		CEF4427A1D5EF0E60061CC49 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CEF442801D5EF2200061CC49 /* BarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BarViewController.swift; sourceTree = "<group>"; };
+		CEF442841D5FC2BC0061CC49 /* UINavigationBar+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UINavigationBar+Extensions.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +60,7 @@
 		CEF4426B1D5EF0E60061CC49 /* BarSample */ = {
 			isa = PBXGroup;
 			children = (
+				CEF442841D5FC2BC0061CC49 /* UINavigationBar+Extensions.swift */,
 				CEF4426C1D5EF0E60061CC49 /* AppDelegate.swift */,
 				CEF4426E1D5EF0E60061CC49 /* FirstViewController.swift */,
 				CEF442701D5EF0E60061CC49 /* SecondViewController.swift */,
@@ -141,6 +144,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CEF442711D5EF0E60061CC49 /* SecondViewController.swift in Sources */,
+				CEF442851D5FC2BC0061CC49 /* UINavigationBar+Extensions.swift in Sources */,
 				CEF4426D1D5EF0E60061CC49 /* AppDelegate.swift in Sources */,
 				CEF442811D5EF2200061CC49 /* BarViewController.swift in Sources */,
 				CEF4426F1D5EF0E60061CC49 /* FirstViewController.swift in Sources */,
@@ -295,6 +299,7 @@
 				CEF4427F1D5EF0E60061CC49 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
