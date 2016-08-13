@@ -20,11 +20,11 @@ class BarViewController: UIViewController {
         didSet {
             guard isBarVisible != oldValue else { return }
 
-            self.callBarView.hidden = !self.isBarVisible || self.isSystemInCallBarVisible()
+            self.callBarView.hidden = !self.isBarVisible || self.shouldHideCallBar()
 
             barHeightConstraint.constant = isBarVisible ? 40 : 0
-            topContainerConstraint.constant = isBarVisible && !self.isSystemInCallBarVisible() ? 20 : 0
-            
+            topContainerConstraint.constant = isBarVisible && !self.shouldHideCallBar() ? 20 : 0
+
             UIView.transitionWithView(self.callBarView, duration: 0.3, options: [UIViewAnimationOptions.TransitionFlipFromTop, UIViewAnimationOptions.LayoutSubviews, UIViewAnimationOptions.CurveEaseOut], animations: { self.view.layoutIfNeeded() }) { _ in
                 if !self.isBarVisible {
                     self.callBarView.hidden = true
@@ -38,6 +38,10 @@ class BarViewController: UIViewController {
     private func isSystemInCallBarVisible() -> Bool {
         let statusBarFrame = UIApplication.sharedApplication().statusBarFrame
         return statusBarFrame.height > 20
+    }
+
+    private func shouldHideCallBar() -> Bool {
+        return isSystemInCallBarVisible() || self.traitCollection.horizontalSizeClass != .Compact
     }
 
     // MARK: LifeCycle
@@ -56,17 +60,21 @@ class BarViewController: UIViewController {
 
     // MARK: Segue
 
+    private weak var containedTabbarController: UITabBarController?
+
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         super.prepareForSegue(segue, sender: sender)
 
         if segue.identifier == "EmbedTabbar" {
+            containedTabbarController = segue.destinationViewController as? UITabBarController
+
             let dest = segue.destinationViewController as? UITabBarController
             let firstVCNavC = dest?.viewControllers?.first as? UINavigationController
             let firstVC = firstVCNavC?.topViewController as? FirstViewController
 
             let closure: BarShowClosure = { [weak self] show in
                 self?.isBarVisible = show
-                if (self?.isSystemInCallBarVisible() ?? false) {
+                if (self?.shouldHideCallBar() ?? false) {
                     self?.wasBarVisible = show
                     self?.isBarVisible = false
                 }
@@ -77,6 +85,38 @@ class BarViewController: UIViewController {
             let secondVC = secondVCNavC?.topViewController as? SecondViewController
             secondVC?.barClosure = closure
         }
+    }
+
+    // MARK: Rotation
+
+    override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+
+        let navController = containedTabbarController?.selectedViewController as? UINavigationController
+
+        // if we're going to rotate to landscape on iPhone, or iPad with 1/3 - we need to hide call bar
+        if size.width > size.height && self.traitCollection.horizontalSizeClass == .Compact {
+            self.wasBarVisible = self.isBarVisible
+            self.isBarVisible = false
+        }
+
+        // if we return to portrait - we'll need a little hack to prevent navigationBar from downsizing
+        if size.height > size.width && self.traitCollection.verticalSizeClass == .Compact {
+            navController?.navigationBar.preventSizing = true
+        }
+        coordinator.animateAlongsideTransition(nil) { _ in
+
+            navController?.navigationBar.preventSizing = false
+
+            // after rotation is done to portrait - show call bar if it was hidden
+            if self.wasBarVisible && !self.shouldHideCallBar() {
+                let show = self.wasBarVisible
+                self.wasBarVisible = false
+                self.isBarVisible = show
+            }
+
+        }
+
+        super.viewWillTransitionToSize(size, withTransitionCoordinator: coordinator)
     }
 
     // MARK: Notifications
