@@ -158,9 +158,6 @@
                                     <constraint firstAttribute="height" id="ird-h6-ivy"/>
                                     <constraint firstItem="d03-Hs-FL2" firstAttribute="centerX" secondItem="XoH-DU-WxR" secondAttribute="centerX" id="szZ-XD-AeQ"/>
                                 </constraints>
-                                <connections>
-                                    <action selector="callBarTouched:" destination="Nra-AP-ERX" eventType="touchUpInside" id="cy3-OO-SMl"/>
-                                </connections>
                             </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
