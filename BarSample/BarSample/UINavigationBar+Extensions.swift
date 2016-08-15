@@ -13,18 +13,8 @@ extension UINavigationBar {
         static var preventSizingKey = "preventSizing"
     }
 
-    public var preventSizing: Bool {
-        get {
-            return objc_getAssociatedObject(self, &AssociatedDataKey.preventSizingKey) as? Bool ?? false
-        }
-        set {
-            objc_setAssociatedObject(
-                self,
-                &AssociatedDataKey.preventSizingKey,
-                newValue as Bool,
-                .OBJC_ASSOCIATION_RETAIN_NONATOMIC
-            )
-        }
+    struct ExtraSize {
+        static var additionalHeight: CGFloat = 0
     }
 
     private struct SwizzleStatic {
@@ -58,9 +48,7 @@ extension UINavigationBar {
 
     public func swizzled_sizeThatFits(size: CGSize) -> CGSize {
         var superSize = self.swizzled_sizeThatFits(size)
-        if preventSizing {
-            superSize.height = 64
-        }
+        superSize.height += self.dynamicType.ExtraSize.additionalHeight
         
         return superSize
     }

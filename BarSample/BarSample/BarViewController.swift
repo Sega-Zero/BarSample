@@ -14,27 +14,24 @@ class BarViewController: UIViewController {
 
     @IBOutlet var barHeightConstraint: NSLayoutConstraint!
     @IBOutlet var callBarView: UIView!
-    @IBOutlet var topContainerConstraint: NSLayoutConstraint!
     @IBOutlet var tapToReturnToCallLabel: UILabel!
 
     private var isBarVisible = false {
         didSet {
             guard isBarVisible != oldValue else { return }
 
-            self.callBarView.hidden = !self.isBarVisible || self.shouldHideCallBar()
+            barHeightConstraint.constant = isBarVisible && !self.shouldHideCallBar() ? callBarHeight() : 0
+            UINavigationBar.ExtraSize.additionalHeight = isBarVisible && !self.shouldHideCallBar() ? self.callBarHeight() - 20 : 0
 
-            barHeightConstraint.constant = isBarVisible ? 40 : 0
-            topContainerConstraint.constant = isBarVisible && !self.shouldHideCallBar() ? 20 : 0
-
-            UIView.transitionWithView(self.callBarView, duration: 0.3, options: [UIViewAnimationOptions.TransitionFlipFromTop, UIViewAnimationOptions.LayoutSubviews, UIViewAnimationOptions.CurveEaseOut], animations: { self.view.layoutIfNeeded() }) { _ in
-                if !self.isBarVisible {
-                    self.callBarView.hidden = true
-                }
-            }
+            self.showCallBarAnimated()
         }
     }
 
     // MARK: private methods
+
+    func callBarHeight() -> CGFloat {
+        return UIApplication.sharedApplication().statusBarFrame.height + (self.isSystemInCallBarVisible() ? 0 : 20)
+    }
 
     private func isSystemInCallBarVisible() -> Bool {
         let statusBarFrame = UIApplication.sharedApplication().statusBarFrame
@@ -42,7 +39,15 @@ class BarViewController: UIViewController {
     }
 
     private func shouldHideCallBar() -> Bool {
-        return isSystemInCallBarVisible() || self.traitCollection.verticalSizeClass == .Compact
+        return self.traitCollection.verticalSizeClass == .Compact
+    }
+
+    private func showCallBarAnimated() {
+        let navController = containedTabbarController?.selectedViewController as? UINavigationController
+        UIView.transitionWithView(self.callBarView, duration: 0.3, options: [UIViewAnimationOptions.TransitionFlipFromTop, UIViewAnimationOptions.LayoutSubviews, UIViewAnimationOptions.CurveEaseOut], animations: {
+            self.view.layoutIfNeeded()
+            navController?.navigationBar.sizeToFit()
+            }, completion: nil)
     }
 
     // MARK: LifeCycle
@@ -102,10 +107,6 @@ class BarViewController: UIViewController {
 
             let closure: BarShowClosure = { [weak self] show in
                 self?.isBarVisible = show
-                if (self?.shouldHideCallBar() ?? false) {
-                    self?.wasBarVisible = show
-                    self?.isBarVisible = false
-                }
             }
 
             firstVC?.barClosure = closure
@@ -119,29 +120,29 @@ class BarViewController: UIViewController {
 
     override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
 
+        barHeightConstraint.constant = isBarVisible && !self.shouldHideCallBar() ? callBarHeight() : 0
+
+        // if we're going to rotate to landscape on iPhone - we need to hide call bar
+        if size.width > size.height && self.traitCollection.horizontalSizeClass == .Compact && self.traitCollection.userInterfaceIdiom == .Phone {
+            barHeightConstraint.constant = 0
+            UINavigationBar.ExtraSize.additionalHeight = 0
+        }
+
         let navController = containedTabbarController?.selectedViewController as? UINavigationController
 
-        // if we're going to rotate to landscape on iPhone, or iPad with 1/3 - we need to hide call bar
-        if size.width > size.height && self.traitCollection.horizontalSizeClass == .Compact {
-            self.wasBarVisible = self.isBarVisible
-            self.isBarVisible = false
-        }
-
-        // if we return to portrait - we'll need a little hack to prevent navigationBar from downsizing
         if size.height > size.width && self.traitCollection.verticalSizeClass == .Compact {
-            navController?.navigationBar.preventSizing = true
+            barHeightConstraint.constant = isBarVisible ? callBarHeight() + 20 : 0
+            UINavigationBar.ExtraSize.additionalHeight = isBarVisible ? self.callBarHeight() : 0
         }
-        coordinator.animateAlongsideTransition(nil) { _ in
 
-            navController?.navigationBar.preventSizing = false
+        coordinator.animateAlongsideTransition({ _ in self.view.layoutIfNeeded() }) { _ in
+            self.barHeightConstraint.constant = self.isBarVisible && !self.shouldHideCallBar() ? self.callBarHeight() : 0
+            UINavigationBar.ExtraSize.additionalHeight = self.isBarVisible && !self.shouldHideCallBar() ? self.callBarHeight() - 20 : 0
 
-            // after rotation is done to portrait - show call bar if it was hidden
-            if self.wasBarVisible && !self.shouldHideCallBar() {
-                let show = self.wasBarVisible
-                self.wasBarVisible = false
-                self.isBarVisible = show
+            //animate size since In-Call bar may gone during landscape, so we'll need a smooth resize
+            UIView.animateWithDuration(0.2) {
+                navController?.navigationBar.sizeToFit()
             }
-
         }
 
         super.viewWillTransitionToSize(size, withTransitionCoordinator: coordinator)
@@ -149,27 +150,30 @@ class BarViewController: UIViewController {
 
     // MARK: Notifications
 
-    private var wasBarVisible = false
-
     @objc private func statusBarFrameWillChange(notification: NSNotification) {
         guard let newFrameValue = notification.userInfo?[UIApplicationStatusBarFrameUserInfoKey] as? NSValue else { return }
 
         let newFrame = newFrameValue.CGRectValue()
 
         if newFrame.height > 20 {
-            self.wasBarVisible = self.isBarVisible
-            self.isBarVisible = false
+            barHeightConstraint.constant = isBarVisible && !self.shouldHideCallBar()  ? callBarHeight() : 0
+            UINavigationBar.ExtraSize.additionalHeight = isBarVisible && !self.shouldHideCallBar() ? self.callBarHeight() - 20 : 0
+            let navController = containedTabbarController?.selectedViewController as? UINavigationController
+            navController?.navigationBar.sizeToFit()
         }
     }
 
     @objc private func statusBarFrameDidChange(notification: NSNotification) {
         guard let oldFrameValue = notification.userInfo?[UIApplicationStatusBarFrameUserInfoKey] as? NSValue else { return }
 
+        let navController = containedTabbarController?.selectedViewController as? UINavigationController
+
         let oldFrame = oldFrameValue.CGRectValue()
 
         if oldFrame.height > 20 {
-            self.isBarVisible = wasBarVisible
-            wasBarVisible = false
+            barHeightConstraint.constant = isBarVisible && !self.shouldHideCallBar() ? callBarHeight() : 0
+            UINavigationBar.ExtraSize.additionalHeight = isBarVisible && !self.shouldHideCallBar() ? self.callBarHeight() - 20 : 0
+            navController?.navigationBar.sizeToFit()
         }
     }
 

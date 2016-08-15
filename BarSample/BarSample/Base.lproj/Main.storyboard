@@ -175,7 +175,6 @@
                         <outlet property="barHeightConstraint" destination="ird-h6-ivy" id="LEC-3g-jIa"/>
                         <outlet property="callBarView" destination="XoH-DU-WxR" id="UKa-ly-IOO"/>
                         <outlet property="tapToReturnToCallLabel" destination="d03-Hs-FL2" id="j6Q-a1-U8m"/>
-                        <outlet property="topContainerConstraint" destination="wDs-aX-Jkw" id="fm6-hH-JkM"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mlj-dM-0gt" userLabel="First Responder" sceneMemberID="firstResponder"/>
