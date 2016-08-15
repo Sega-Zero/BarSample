@@ -42,7 +42,7 @@ class BarViewController: UIViewController {
     }
 
     private func shouldHideCallBar() -> Bool {
-        return isSystemInCallBarVisible() || self.traitCollection.horizontalSizeClass != .Compact
+        return isSystemInCallBarVisible() || self.traitCollection.verticalSizeClass == .Compact
     }
 
     // MARK: LifeCycle
