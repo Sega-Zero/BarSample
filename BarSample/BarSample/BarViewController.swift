@@ -53,6 +53,8 @@ class BarViewController: UIViewController {
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(self.dynamicType.statusBarFrameWillChange), name: UIApplicationWillChangeStatusBarFrameNotification, object: nil)
 
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(self.dynamicType.statusBarFrameDidChange), name: UIApplicationDidChangeStatusBarFrameNotification, object: nil)
+
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(self.dynamicType.statusBarTouched), name: "statusBarTouched", object: nil)
     }
 
     deinit {
@@ -170,4 +172,15 @@ class BarViewController: UIViewController {
             wasBarVisible = false
         }
     }
+
+    @objc private func statusBarTouched(notification: NSNotification) {
+        self.callbarTap(self)
+    }
+
+    //MARK: Actions
+
+    @IBAction func callbarTap(sender: AnyObject) {
+        print("tapped on call bar")
+    }
+
 }
