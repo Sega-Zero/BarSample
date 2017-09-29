@@ -11,8 +11,7 @@ import UIKit
 private let swizzleClosure: (UINavigationBar.Type) -> Void = { navBar in
 
     func swizzle(selector: Selector, to swizzledSelector: Selector) {
-        let originalMethod = class_getInstanceMethod(navBar, selector)
-        let swizzledMethod = class_getInstanceMethod(navBar, swizzledSelector)
+        guard let originalMethod = class_getInstanceMethod(navBar, selector), let swizzledMethod = class_getInstanceMethod(navBar, swizzledSelector) else { return }
 
         let didAddMethod = class_addMethod(navBar, selector, method_getImplementation(swizzledMethod), method_getTypeEncoding(swizzledMethod))
 
@@ -40,7 +39,7 @@ extension UINavigationBar {
 
     // MARK: - Method Swizzling
 
-    public func swizzled_sizeThatFits(_ size: CGSize) -> CGSize {
+    @objc public func swizzled_sizeThatFits(_ size: CGSize) -> CGSize {
         var superSize = self.swizzled_sizeThatFits(size)
 
         if type(of: self).ExtraSize.additionalHeight != 0 {
