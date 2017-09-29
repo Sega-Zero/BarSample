@@ -15,12 +15,16 @@ class BarViewController: UIViewController {
     @IBOutlet var barHeightConstraint: NSLayoutConstraint!
     @IBOutlet var callBarView: UIView!
     @IBOutlet var tapToReturnToCallLabel: UILabel!
+    @IBOutlet var containerTopConstraint: NSLayoutConstraint!
 
     private var isBarVisible = false {
         didSet {
             guard isBarVisible != oldValue else { return }
 
             barHeightConstraint.constant = isBarVisible && !self.shouldHideCallBar() ? callBarHeight() : 0
+            if #available(iOS 11, *) {
+                containerTopConstraint.constant = barHeightConstraint.constant
+            }
             UINavigationBar.ExtraSize.additionalHeight = isBarVisible && !self.shouldHideCallBar() ? self.callBarHeight() - 20 : 0
 
             self.showCallBarAnimated()

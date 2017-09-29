@@ -182,6 +182,7 @@
                     <connections>
                         <outlet property="barHeightConstraint" destination="ird-h6-ivy" id="LEC-3g-jIa"/>
                         <outlet property="callBarView" destination="XoH-DU-WxR" id="UKa-ly-IOO"/>
+                        <outlet property="containerTopConstraint" destination="wDs-aX-Jkw" id="ara-7m-xFn"/>
                         <outlet property="tapToReturnToCallLabel" destination="d03-Hs-FL2" id="j6Q-a1-U8m"/>
                     </connections>
                 </viewController>
