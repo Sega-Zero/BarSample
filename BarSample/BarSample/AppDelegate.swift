@@ -13,22 +13,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-
-    func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        UINavigationBar.appearance().barTintColor = UIColor.grayColor()
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil) -> Bool {
+        _ = navigationBarSwizzle
+        UINavigationBar.appearance().barTintColor = UIColor.gray
         return true
     }
 
-    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
-        super.touchesBegan(touches, withEvent: event)
-        guard let events = event?.allTouches(), touch = events.first else { return }
-        let location = touch.locationInView(self.window)
-        let statusBarFrame = UIApplication.sharedApplication().statusBarFrame
-        if statusBarFrame.contains(location) {
-            NSNotificationCenter.defaultCenter().postNotificationName("statusBarTouched", object: nil)
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+        guard let events = event?.allTouches, let touch = events.first else { return }
+
+        guard let level = touch.window?.windowLevel, level <= UIWindowLevelStatusBar else { return }
+
+        let location = touch.location(in: self.window)
+        let statusBarFrame = UIApplication.shared.statusBarFrame
+        if statusBarFrame.contains(location) || location.y < 40 {
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "statusBarTouched"), object: nil)
         }
     }
-
 
 }
 

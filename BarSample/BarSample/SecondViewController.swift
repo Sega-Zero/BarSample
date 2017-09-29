@@ -14,11 +14,9 @@ class SecondViewController: UIViewController {
     
     private var barVisible = false
 
-    @IBAction func showhidebar(sender: AnyObject) {
+    @IBAction func showHideBar(_ sender: Any) {
         barVisible = !barVisible
         barClosure?(barVisible)
     }
-
-
 }
 

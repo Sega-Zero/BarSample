@@ -8,6 +8,27 @@
 
 import UIKit
 
+private let swizzleClosure: (UINavigationBar.Type) -> Void = { navBar in
+
+    func swizzle(selector: Selector, to swizzledSelector: Selector) {
+        let originalMethod = class_getInstanceMethod(navBar, selector)
+        let swizzledMethod = class_getInstanceMethod(navBar, swizzledSelector)
+
+        let didAddMethod = class_addMethod(navBar, selector, method_getImplementation(swizzledMethod), method_getTypeEncoding(swizzledMethod))
+
+        if didAddMethod {
+            class_replaceMethod(navBar, swizzledSelector, method_getImplementation(originalMethod), method_getTypeEncoding(originalMethod))
+        } else {
+            method_exchangeImplementations(originalMethod, swizzledMethod)
+        }
+    }
+
+    swizzle(selector: #selector(UINavigationBar.sizeThatFits(_:)), to: #selector(UINavigationBar.swizzled_sizeThatFits(_:)))
+}
+
+let navigationBarSwizzle: () = swizzleClosure(UINavigationBar.self)
+
+/// :nodoc:
 extension UINavigationBar {
     private struct AssociatedDataKey {
         static var preventSizingKey = "preventSizing"
@@ -17,39 +38,35 @@ extension UINavigationBar {
         static var additionalHeight: CGFloat = 0
     }
 
-    private struct SwizzleStatic {
-        static var token: dispatch_once_t = 0
-    }
+    // MARK: - Method Swizzling
 
-    public override class func initialize() {
-        if self !== UINavigationBar.self {
-            return
-        }
+    public func swizzled_sizeThatFits(_ size: CGSize) -> CGSize {
+        var superSize = self.swizzled_sizeThatFits(size)
 
-        func swizzle(originalSelector: Selector, swizzledSelector: Selector) {
-            let originalMethod = class_getInstanceMethod(self, originalSelector)
-            let swizzledMethod = class_getInstanceMethod(self, swizzledSelector)
-
-            let didAddMethod = class_addMethod(self, originalSelector, method_getImplementation(swizzledMethod), method_getTypeEncoding(swizzledMethod))
-
-            if didAddMethod {
-                class_replaceMethod(self, swizzledSelector, method_getImplementation(originalMethod), method_getTypeEncoding(originalMethod))
-            } else {
-                method_exchangeImplementations(originalMethod, swizzledMethod)
+        if type(of: self).ExtraSize.additionalHeight != 0 {
+            let owner = self.firstAvailableUIViewController()
+            if owner?.presentingViewController == nil {
+                superSize.height += type(of: self).ExtraSize.additionalHeight
             }
         }
 
-        dispatch_once(&SwizzleStatic.token) {
-            swizzle(#selector(UINavigationBar.sizeThatFits(_:)), swizzledSelector: #selector(UINavigationBar.swizzled_sizeThatFits(_:)))
-        }
-    }
-
-    // MARK: - Method Swizzling
-
-    public func swizzled_sizeThatFits(size: CGSize) -> CGSize {
-        var superSize = self.swizzled_sizeThatFits(size)
-        superSize.height += self.dynamicType.ExtraSize.additionalHeight
-        
         return superSize
+    }
+}
+
+private extension UIView {
+    func firstAvailableUIViewController() -> UIViewController? {
+        return traverseResponderChainForUIViewController() as? UIViewController
+    }
+    func traverseResponderChainForUIViewController() -> AnyObject? {
+        let nextResponder = self.next
+        switch nextResponder {
+        case let vc? where vc is UIViewController:
+            return vc
+        case let view? where view is UIView:
+            return (view as? UIView)?.traverseResponderChainForUIViewController()
+        default:
+            return nil
+        }
     }
 }
